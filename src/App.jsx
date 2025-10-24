@@ -1,73 +1,37 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
-const MODELS_KEY = 'models_static'
-const BOOKINGS_KEY = 'bookings_static'
-
-function readModels(){
-  try { return JSON.parse(localStorage.getItem(MODELS_KEY) || '[]') } catch(e){ return [] }
-}
-function writeModels(arr){ localStorage.setItem(MODELS_KEY, JSON.stringify(arr)) }
+const demoModels = [
+  {id:'m1',name:'Asha Verma',age:25,desc:'Fashion model',img:'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80'},
+  {id:'m2',name:'Rina Kapoor',age:28,desc:'Fitness model',img:'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80'},
+  {id:'m3',name:'Nina Sharma',age:23,desc:'Commercial model',img:'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&q=80'},
+  {id:'m4',name:'Tara Singh',age:26,desc:'Runway model',img:'https://images.unsplash.com/photo-1502767089025-6572583495ff?w=400&q=80'},
+  {id:'m5',name:'Kriti Jain',age:24,desc:'Editorial model',img:'https://images.unsplash.com/photo-1542060747-6d82c5a2d80c?w=400&q=80'},
+  {id:'m6',name:'Pooja Mehra',age:27,desc:'Fitness & Glam',img:'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&q=80'},
+  {id:'m7',name:'Sana Ali',age:22,desc:'Instagram model',img:'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&q=80'},
+  {id:'m8',name:'Meera Rao',age:29,desc:'Lifestyle model',img:'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=401&q=80'},
+  {id:'m9',name:'Anita Desai',age:25,desc:'Glamour shoots',img:'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=401&q=80'},
+  {id:'m10',name:'Ritu Kaur',age:26,desc:'Fashion & Events',img:'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=401&q=80'}
+]
 
 export default function App(){
-  const [models, setModels] = useState([])
-  useEffect(()=> setModels(readModels()), [])
-
+  const navigate = useNavigate()
   return (
     <div className="container">
       <header className="header">
-        <h1>Model Booking — Browse</h1>
-        <div>
-          <Link className="link" to="/admin">Admin</Link>
-        </div>
+        <h1>Model Booking Portal</h1>
       </header>
-
-      <div style={{marginTop:16}}>
-        {models.length===0 && <div className="card"><p>No models yet. Go to <Link to='/admin' className='link'>Admin</Link> to add demo models.</p></div>}
-        <div className={`grid ${models.length>0 ? 'grid-3' : ''}`} style={{marginTop:12}}>
-          {models.map(m=>(
-            <div key={m.id} className="card">
-              <img src={m.photo || 'https://via.placeholder.com/400x300'} alt={m.name} className="thumb" />
-              <h3 style={{marginTop:8}}>{m.name}</h3>
-              <p className="small">{m.city} • {m.category} • ₹{m.price}/hr</p>
-              <p style={{marginTop:8}}>{m.description}</p>
-              <BookingBox model={m} onBook={()=>{}} />
-            </div>
-          ))}
-        </div>
+      <div className="grid grid-3">
+        {demoModels.map(m=>(
+          <div key={m.id} className="card" onClick={()=>navigate('/profile/'+m.id)} style={{cursor:'pointer'}}>
+            <img src={m.img} className="thumb" alt={m.name} />
+            <h3>{m.name}</h3>
+            <p>{m.desc}</p>
+            <p>Age: {m.age}</p>
+          </div>
+        ))}
       </div>
-    </div>
-  )
-}
-
-function BookingBox({ model }){
-  const [name,setName]=useState('')
-  const [email,setEmail]=useState('')
-  const [date,setDate]=useState('')
-  const [hours,setHours]=useState(1)
-  const [saved,setSaved]=useState(false)
-
-  const handle = ()=>{
-    if(!name||!email) return alert('Name and email required')
-    const bookings = JSON.parse(localStorage.getItem(BOOKINGS_KEY) || '[]')
-    bookings.push({ id:Date.now(), modelId:model.id, modelName:model.name, name, email, date, hours })
-    localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings))
-    setSaved(true)
-    setTimeout(()=>setSaved(false),2000)
-    setName(''); setEmail(''); setDate(''); setHours(1)
-  }
-
-  return (
-    <div style={{marginTop:12}}>
-      <div style={{display:'grid',gap:8}}>
-        <input className="input" placeholder="Your name" value={name} onChange={e=>setName(e.target.value)} />
-        <input className="input" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} />
-        <div style={{display:'flex',gap:8}}>
-          <input className="input" type="datetime-local" value={date} onChange={e=>setDate(e.target.value)} />
-          <input className="input" type="number" min="1" value={hours} onChange={e=>setHours(e.target.value)} style={{width:100}} />
-        </div>
-        <button className="btn btn-primary" onClick={handle}>{saved ? 'Booked ✓' : 'Book'}</button>
-      </div>
+      <a href="https://wa.me/911234567890" target="_blank" rel="noopener noreferrer" className="whatsapp">🟢</a>
     </div>
   )
 }
